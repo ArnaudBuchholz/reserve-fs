@@ -5,8 +5,10 @@ fs handler for [reserve](https://npmjs.com/package/reserve)
 
 ```json
 {
-  handlers: ["reserve/fs"],
-  mappings: [{
+  "handlers": {
+    "fs": "reserve/fs"
+  },
+  "mappings": [{
     "match": "\\/(.*)",
     "fs": "./$1"
   }]
