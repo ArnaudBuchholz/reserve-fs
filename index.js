@@ -4,91 +4,58 @@ const fs = require('fs')
 const path = require('path')
 const util = require('util')
 
-const statAsync = util.promisify(fs.stat)
-const unlinkAsync = util.promisify(fs.unlink)
-const rmdirAsync = util.promisify(fs.rmdir)
+const readdirAsync = util.promisify(fs.readdir)
 
-const
-  _read = (response, filePath) => {
-      fs.readFile(filePath, (err, data) => _succeeded(response, err, data));
-  },
+const readApis = 'readdir,stat'.split(',')
+const writeApis = ''.split(',')
+const clientTemplatePromise = readdirAsync(path.join(__dirname, 'client.js')).then(buffer => buffer.toString())
 
-  _readFolder = (response, folderPath) => {
-      fs.readdir(folderPath, (err, files) => _succeeded(response, err, JSON.stringify(files)));
-  },
+function readBody (request) {
+  return new Promise((resolve, reject) => {
+    const buffer = []
+    request
+      .on('data', chunk => buffer.push(chunk.toString()))
+      .on('error', reject)
+      .on('end', () => resolve(buffer.join('')))
+  })
+}
 
-  _write = ({request, response, file}) => {
-      const
-          filePath = file.path,
-          data = [],
-          flag = request.method === "POST" ? "w" : "a";
-      request
-          .on("data", chunk => {
-              data.push(chunk);
-          })
-          .on("end", () => {
-              fs.writeFile(filePath, Buffer.concat(data), {flag}, err => _succeeded(response, err));
-          });
-  },
-
-  _handlers = {
-
-      OPTIONS: ({ response }) => {
-          response.end()
-      },
-
-      GET: ({ response, filePath, fileStat }) => {
-          if (fileStat.isDirectory()) {
-              return _readFolder({ response, filePath })
-          }
-          return _readFile({ response, filePath })
-      },
-
-      DELETE: ({ request, response, filePath, fileStat }) => {
-        if (fileStat.isDirectory()) {
-          return rmdirAsync(filePath).then(() => 204)
-        }
-        return unlinkAsync(filePath).then(() => 204)
-      },
-
-      POST: _write,
-
-      PUT: _write
-
-  }
-
+function send (response, answer) {
+  response.writeHead(200, {
+    'Content-Type': 'application/javascript',
+    'Content-Length': answer.length
+  })
+  response.end(answer)
+}
 
 module.export = {
 
   async redirect ({ mapping, match, redirect, request, response }) {
     const method = request.method
-
-    if (!['GET', 'PUT', 'POST', 'OPTIONS', 'DELETE'].includes(method)) {
-      return // Not handled
+    const allApis = readApis
+    if (!mapping['read-only']) {
+     allApis = allApis.concat(writeApis)
     }
 
-    const filePath = /([^?#]+)/.exec(unescape(redirect))[1] // filter URL parameters & hash
+    if (method === 'GET') {
+      const clientString = (await clientTemplatePromise)
+        .replace(`APIs = ''`, `APIs = '${allApis.join(',')}'`)
+        .replace(`NAME = ''`, `NAME = '${mapping['client-name'] || 'fs'}'`)
+        .replace(`URL = ''`, `URL = '${request.url}'`)
+      send(response, clientString)
+      return
+    }
 
-    let fileStat
-    try {
-      fileStat = await statAsync(filePath)
-    } catch (err) {
-      if (mapping['read-only'] || method !== 'POST') {
+    if (method === 'POST') {
+      const body = await readBody(request)
+      const call = JSON.parse(body)
+      if (!allApis.includes(call.name)){
         return 404
       }
-    }
-
-    if (fileStat && request.headers['x-get-fs-stat']) {
-      request.setHeader('x-fs-stat', JSON.stringify({
-        isDirectory: fileState.isDirectory(),
-        size: fileStat.size,
-        ctime: fileStat.ctime.toISOString(),
-        mtime: fileStat.mtime.toISOString(),
+      fs[call.name].apply(fs, call.args.concat((err, result) => {
+        send(response, JSON.stringify({ err, result }))
       }))
     }
 
-    return _handlers[method]({ filePath, fileStat, request, response })
-      .catch(() => 500)
-  }
-
+    return 500
 }
