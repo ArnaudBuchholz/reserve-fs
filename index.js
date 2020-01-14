@@ -4,11 +4,11 @@ const fs = require('fs')
 const path = require('path')
 const util = require('util')
 
-const readdirAsync = util.promisify(fs.readdir)
+const readFileAsync = util.promisify(fs.readFile)
 
 const readApis = 'readdir,stat'.split(',')
 const writeApis = ''.split(',')
-const clientTemplatePromise = readdirAsync(path.join(__dirname, 'client.js')).then(buffer => buffer.toString())
+const clientTemplatePromise = readFileAsync(path.join(__dirname, 'client.js')).then(buffer => buffer.toString())
 
 function readBody (request) {
   return new Promise((resolve, reject) => {
@@ -28,20 +28,19 @@ function send (response, answer) {
   response.end(answer)
 }
 
-module.export = {
-
+module.exports = {
   async redirect ({ mapping, match, redirect, request, response }) {
     const method = request.method
-    const allApis = readApis
+    let allApis = readApis
     if (!mapping['read-only']) {
-     allApis = allApis.concat(writeApis)
+      allApis = allApis.concat(writeApis)
     }
 
     if (method === 'GET') {
       const clientString = (await clientTemplatePromise)
-        .replace(`APIs = ''`, `APIs = '${allApis.join(',')}'`)
-        .replace(`NAME = ''`, `NAME = '${mapping['client-name'] || 'fs'}'`)
-        .replace(`URL = ''`, `URL = '${request.url}'`)
+        .replace('APIs = \'\'', `APIs = '${allApis.join(',')}'`)
+        .replace('NAME = \'\'', `NAME = '${mapping['client-name'] || 'fs'}'`)
+        .replace('URL = \'\'', `URL = '${request.url}'`)
       send(response, clientString)
       return
     }
@@ -49,7 +48,7 @@ module.export = {
     if (method === 'POST') {
       const body = await readBody(request)
       const call = JSON.parse(body)
-      if (!allApis.includes(call.name)){
+      if (!allApis.includes(call.name)) {
         return 404
       }
       fs[call.name].apply(fs, call.args.concat((err, result) => {
@@ -58,4 +57,5 @@ module.export = {
     }
 
     return 500
+  }
 }
