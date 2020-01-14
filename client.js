@@ -15,12 +15,12 @@
       xhr.open('POST', URL)
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
-          if (xhr.status === 200)) {
-            var response = JSON.parse(responseText)
+          if (xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText)
             if (response.err) {
               callback(new Error(response.err))
             } else {
-              callback(0, response.result)
+              callback(null, response.result)
             }
           } else {
             callback(new Error(xhr.statusText))
@@ -62,5 +62,4 @@
   })
 
   window[NAME] = fs
-
 }())
