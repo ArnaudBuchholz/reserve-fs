@@ -4,11 +4,15 @@ const fs = require('fs')
 const path = require('path')
 const util = require('util')
 
-const readFileAsync = util.promisify(fs.readFile)
+const readApis = 'readdir,readFile,stat'.split(',')
+const writeApis = 'mkdir,rmdir,writeFile'.split(',')
 
-const readApis = 'readdir,stat'.split(',')
-const writeApis = ''.split(',')
-const clientTemplatePromise = readFileAsync(path.join(__dirname, 'client.js')).then(buffer => buffer.toString())
+const fsAsync = {}
+readApis.concat(writeApis).forEach(api => {
+    fsAsync[api] = util.promisify(fs[api])
+})
+
+const clientTemplatePromise = fsAsync.readFile(path.join(__dirname, 'client.js')).then(buffer => buffer.toString())
 
 function readBody (request) {
   return new Promise((resolve, reject) => {
@@ -48,12 +52,18 @@ module.exports = {
     if (method === 'POST') {
       const body = await readBody(request)
       const call = JSON.parse(body)
-      if (!allApis.includes(call.name)) {
+      const api = call.api
+      if (!allApis.includes(api)) {
         return 404
       }
-      fs[call.name].apply(fs, call.args.concat((err, result) => {
-        send(response, JSON.stringify({ err, result }))
-      }))
+      call.args[0] = path.join(redirect, call.args[0])
+      if (!call.args[0].startsWith(redirect)) { // Use of .. to climb up the hierarchy
+        return 403
+      }
+      return fsAsync[api].apply(fs, call.args)
+        .then(result => JSON.stringify({ result }))
+        .catch(err => JSON.stringify({ err: err.toString() }))
+        .then(answer => send(response, answer))
     }
 
     return 500
