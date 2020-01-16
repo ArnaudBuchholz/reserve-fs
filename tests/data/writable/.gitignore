@@ -1,1 +1,3 @@
 *.txt
+!hello world.txt
+!folder/lorem ipsum.txt
