@@ -62,7 +62,7 @@ module.exports = {
       }
       return fsAsync[api].apply(fs, call.args)
         .then(result => JSON.stringify({ result }))
-        .catch(err => JSON.stringify({ err: err.toString() }))
+        .catch(err => JSON.stringify({ err: err.message }))
         .then(answer => send(response, answer))
     }
 
