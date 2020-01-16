@@ -6,6 +6,13 @@ let request
 
 global.window = {}
 
+const statuses = {
+  403: 'Forbidden',
+  404: 'Not found',
+  405: 'Method Not Allowed',
+  500: 'Internal Server Error'
+}
+
 class XMLHttpRequest {
   open (method, url) {
     this._method = method
@@ -20,6 +27,10 @@ class XMLHttpRequest {
         this.responseText = response.toString()
         this.onreadystatechange()
       })
+  }
+
+  get statusText () {
+    return statuses[this.status] || 'Unknown status'
   }
 }
 
