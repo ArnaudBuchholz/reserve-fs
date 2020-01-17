@@ -30,7 +30,7 @@ class XMLHttpRequest {
   }
 
   get statusText () {
-    return statuses[this.status] || 'Unknown status'
+    return statuses[this.status]
   }
 }
 
