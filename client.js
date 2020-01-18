@@ -120,3 +120,9 @@ module.exports = function () {
 
   window[NAME] = fs
 }
+
+// Enables coverage
+const coverage = (/(cov_[a-z0-9]+)/.exec(module.exports.toString()) || {})[1]
+if (coverage) {
+  console.log(coverage)
+}
