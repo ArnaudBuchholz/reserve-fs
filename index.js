@@ -15,8 +15,6 @@ readApis.concat(writeApis).forEach(api => {
 const client = require('./client')
 const clientTemplate = `(${client.toString()}())`
 
-console.log(clientTemplate)
-
 function readBody (request) {
   return new Promise((resolve, reject) => {
     const buffer = []
