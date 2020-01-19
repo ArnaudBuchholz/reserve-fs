@@ -82,7 +82,7 @@ function test (member) {
         assert(() => !!fileStat)
         assert(() => !fileStat.isDirectory())
         assert(() => fileStat.isFile())
-        assert(() => fileStat.size === 65749)
+        assert(() => fileStat.size === 65750)
       })
     )
 
