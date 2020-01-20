@@ -1,6 +1,20 @@
-# reserve-fs
+# REserve/**fs**
 File system mapper for [REserve](https://npmjs.com/package/reserve).
 It makes Node.js' [fs](https://nodejs.org/api/fs.html) APIs available in the browser.
+
+[![Travis-CI](https://travis-ci.org/ArnaudBuchholz/reserve-fs.svg?branch=master)](https://travis-ci.org/ArnaudBuchholz/reserve-fs#)
+[![Coverage Status](https://coveralls.io/repos/github/ArnaudBuchholz/reserve-fs/badge.svg?branch=master)](https://coveralls.io/github/ArnaudBuchholz/reserve-fs?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/b4fd0d69be50884018d7/maintainability)](https://codeclimate.com/github/ArnaudBuchholz/reserve-fs/maintainability)
+[![Package Quality](https://npm.packagequality.com/shield/reserve-fs.svg)](https://packagequality.com/#?package=reserve-fs)
+[![Known Vulnerabilities](https://snyk.io/test/github/ArnaudBuchholz/reserve-fs/badge.svg?targetFile=package.json)](https://snyk.io/test/github/ArnaudBuchholz/reserve-fs?targetFile=package.json)
+[![dependencies Status](https://david-dm.org/ArnaudBuchholz/reserve-fs/status.svg)](https://david-dm.org/ArnaudBuchholz/reserve-fs)
+[![devDependencies Status](https://david-dm.org/ArnaudBuchholz/reserve-fs/dev-status.svg)](https://david-dm.org/ArnaudBuchholz/reserve-fs?type=dev)
+[![reserve](https://badge.fury.io/js/reserve-fs.svg)](https://www.npmjs.org/package/reserve-fs)
+[![reserve](http://img.shields.io/npm/dm/reserve-fs.svg)](https://www.npmjs.org/package/reserve-fs)
+[![install size](https://packagephobia.now.sh/badge?p=reserve-fs)](https://packagephobia.now.sh/result?p=reserve-fs)
+[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FArnaudBuchholz%2Freserve-fs.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FArnaudBuchholz%2Freserve-fs?ref=badge_shield)
+
 
 ## Usage
 
