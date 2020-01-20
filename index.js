@@ -83,9 +83,9 @@ module.exports = {
 
     if (method === 'GET') {
       const clientString = clientTemplate
-        .replace('APIs = \'\'', `APIs = '${allApis.join(',')}'`)
-        .replace('NAME = \'\'', `NAME = '${mapping['client-name'] || 'fs'}'`)
-        .replace('URL = \'\'', `URL = '${request.url}'`)
+        .replace('<APIS>', allApis.join(','))
+        .replace('<NAME>', mapping['client-name'] || 'fs')
+        .replace('<URL>', request.url)
       send(response, clientString)
       return
     }
