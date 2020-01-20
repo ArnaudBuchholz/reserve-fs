@@ -18,6 +18,12 @@ describe('hacking', async () => {
     })
   )
 
+  it('handles unexpected errors', () => window.fs.readdirAsync('json-parsing-fail')
+    .then(assert.notExpected, reason => {
+      assert(() => reason instanceof Error)
+    })
+  )
+
   'HEAD,PUT,DELETE,CUSTOM'.split(',').forEach(verb => {
     it(`prevents unauthorized verb use (${verb})`, () => mocked.request(verb, '/fs-ro', {}, JSON.stringify({
       api: 'readdir',
