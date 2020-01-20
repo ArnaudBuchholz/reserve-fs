@@ -39,7 +39,7 @@ module.exports = function () {
   unwrappers.Stat.prototype = Object.create(unwrappers.Dirent.prototype)
 
   function unwrap (result) {
-    if (result.$class) {
+    if (result && result.$class) {
       return new unwrappers[result.$class](result)
     }
     return result
