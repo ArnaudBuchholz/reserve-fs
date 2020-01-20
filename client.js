@@ -124,5 +124,5 @@ module.exports = function () {
 // Enables coverage
 const coverage = (/(cov_[a-z0-9]+)/.exec(module.exports.toString()) || {})[1]
 if (coverage) {
-  global[coverage] = eval(coverage) //eslint-disable-line no-eval
+  global[coverage] = eval(coverage) // eslint-disable-line no-eval
 }
