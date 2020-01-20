@@ -17,14 +17,24 @@ class XMLHttpRequest {
   open (method, url) {
     this._method = method
     this._url = url
+    this.readyState = 1
+    this.onreadystatechange()
   }
 
   send (body) {
     request(this._method, this._url, {}, body)
       .then(response => {
+        this.readyState = 2
+        this.onreadystatechange()
+        this.readyState = 3
+        this.onreadystatechange()
         this.readyState = 4
         this.status = response.statusCode
-        this.responseText = response.toString()
+        if (JSON.parse(body).args[0] === 'json-parsing-fail') {
+          this.responseText = '!' // Will fail JSON parsing
+        } else {
+          this.responseText = response.toString()
+        }
         this.onreadystatechange()
       })
   }
@@ -32,6 +42,8 @@ class XMLHttpRequest {
   get statusText () {
     return statuses[this.status]
   }
+
+  onreadystatechange () {}
 }
 
 const Func = Function
