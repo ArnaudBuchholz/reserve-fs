@@ -122,7 +122,9 @@ module.exports = function () {
 }
 
 // Enables coverage
+/* istanbul ignore next */
 const coverage = (/(cov_[a-z0-9]+)/.exec(module.exports.toString()) || {})[1]
+/* istanbul ignore next */
 if (coverage) {
   global[coverage] = eval(coverage) // eslint-disable-line no-eval
 }
