@@ -5,7 +5,7 @@ const path = require('path')
 const util = require('util')
 
 const readApis = 'readdir,readFile,stat'.split(',')
-const writeApis = 'mkdir,rmdir,writeFile'.split(',')
+const writeApis = 'mkdir,rmdir,unlink,writeFile'.split(',')
 
 const fsAsync = {}
 readApis.concat(writeApis).forEach(api => {
@@ -56,6 +56,8 @@ wrappers.readdir = result => {
   }
   return result
 }
+
+wrappers.readFile = result => result.toString()
 
 const statMembers = 'dev,ino,mode,nlink,uid,gid,rdev,size,blksize,blocks,atimeMs,mtimeMs,ctimeMs,birthtimeMs'.split(',')
 wrappers.stat = result => {
