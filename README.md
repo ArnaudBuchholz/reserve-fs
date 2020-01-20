@@ -1,7 +1,6 @@
 # reserve-fs
-fs handler for [reserve](https://npmjs.com/package/reserve)
-
-It provides a client/server API that wraps most Node.js' [fs](https://nodejs.org/api/fs.html) API
+File system mapper for [REserve](https://npmjs.com/package/reserve).
+It makes Node.js' [fs](https://nodejs.org/api/fs.html) APIs available in the browser.
 
 ## Usage
 
@@ -34,7 +33,23 @@ fs.readdirAsync('folder')
 
 ## Options
 
-* client-name: 'fs'
-* read-only: false
+| Option | Default Value | Explanation |
+|---|---|---|
+| `client-name` | `'fs'` | Name of the member added to the browser window |
+| `read-only` | `false` | Forbids write methods if `true` |
+
+All APIs are **restricted** to the scope of the path configured in the mapping. Any attempt to read or write elsewhere will lead to a `403` error.
 
 ## Supported APIs
+
+The following APIs are supported. A promisified version of each method is provided under the same name suffixed with `Async` (for instance: `fs.readdirAsync`).
+
+* read-only
+  * [`fs.readdir`](https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback)
+  * [`fs.readFile`](https://nodejs.org/api/fs.html#fs_fs_readfile_path_options_callback): the returned data is converted to text
+  * [`fs.stat`](https://nodejs.org/api/fs.html#fs_fs_fstat_fd_options_callback)
+* read/write
+  * [`fs.mkdir`](https://nodejs.org/api/fs.html#fs_fs_mkdir_path_options_callback)
+  * [`fs.rmdir`](https://nodejs.org/api/fs.html#fs_fs_rmdir_path_options_callback)
+  * [`fs.unlink`](https://nodejs.org/api/fs.html#fs_fs_unlink_path_callback)
+  * [`fs.writeFile`](https://nodejs.org/api/fs.html#fs_fs_writefile_file_data_options_callback): `file` must be a file name, `data` is a string
