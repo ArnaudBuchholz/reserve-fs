@@ -1,9 +1,9 @@
 module.exports = function () {
   'use strict'
 
-  var APIs = ''
-  var NAME = ''
-  var URL = ''
+  var APIs = '<APIS>'
+  var NAME = '<NAME>'
+  var URL = '<URL>'
 
   var fs = {}
 
@@ -124,8 +124,5 @@ module.exports = function () {
 // Enables coverage
 const coverage = (/(cov_[a-z0-9]+)/.exec(module.exports.toString()) || {})[1]
 if (coverage) {
-  console.log(coverage)
   global[coverage] = eval(coverage) //eslint-disable-line no-eval
-  const tryout = new Function("return " + coverage)()
-  console.log(tryout === global[coverage])
 }
