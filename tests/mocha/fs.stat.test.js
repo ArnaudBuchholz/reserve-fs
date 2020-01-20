@@ -29,10 +29,6 @@ function test (member) {
         assert(() => typeof fileStat.gid === 'number')
         assert(() => typeof fileStat.rdev === 'number')
         assert(() => fileStat.size === 12)
-        if (path.join === path.posix.join) {
-          assert(() => typeof fileStat.blksize === 'number')
-          assert(() => typeof fileStat.blocks === 'number')
-        }
         assert(() => typeof fileStat.atimeMs === 'number')
         assert(() => typeof fileStat.mtimeMs === 'number')
         assert(() => typeof fileStat.ctimeMs === 'number')
@@ -62,10 +58,6 @@ function test (member) {
         assert(() => typeof folderStat.gid === 'number')
         assert(() => typeof folderStat.rdev === 'number')
         assert(() => typeof folderStat.size === 'number')
-        if (path.join === path.posix.join) {
-          assert(() => typeof folderStat.blksize === 'number')
-          assert(() => typeof folderStat.blocks === 'number')
-        }
         assert(() => typeof folderStat.atimeMs === 'number')
         assert(() => typeof folderStat.mtimeMs === 'number')
         assert(() => typeof folderStat.ctimeMs === 'number')
