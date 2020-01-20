@@ -1,4 +1,6 @@
 # reserve-fs
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FArnaudBuchholz%2Freserve-fs.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FArnaudBuchholz%2Freserve-fs?ref=badge_shield)
+
 File system mapper for [REserve](https://npmjs.com/package/reserve).
 It makes Node.js' [fs](https://nodejs.org/api/fs.html) APIs available in the browser.
 
@@ -53,3 +55,7 @@ The following APIs are supported. A promisified version of each method is provid
   * [`fs.rmdir`](https://nodejs.org/api/fs.html#fs_fs_rmdir_path_options_callback)
   * [`fs.unlink`](https://nodejs.org/api/fs.html#fs_fs_unlink_path_callback)
   * [`fs.writeFile`](https://nodejs.org/api/fs.html#fs_fs_writefile_file_data_options_callback): `file` must be a file name, `data` is a string
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FArnaudBuchholz%2Freserve-fs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FArnaudBuchholz%2Freserve-fs?ref=badge_large)
