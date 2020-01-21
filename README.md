@@ -22,7 +22,7 @@ It makes Node.js' [fs](https://nodejs.org/api/fs.html) APIs available in the bro
 ```json
 {
   "handlers": {
-    "fs": "reserve/fs"
+    "fs": "reserve-fs"
   },
   "mappings": [{
     "match": "\\/fs",
