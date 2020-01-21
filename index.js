@@ -75,44 +75,51 @@ function wrap (api, result) {
   return result
 }
 
+const handlers = {}
+handlers.GET = async ({ allApis, mapping, request, response }) => {
+  send(response, clientTemplate
+    .replace('<APIS>', allApis.join(','))
+    .replace('<NAME>', mapping['client-name'] || 'fs')
+    .replace('<URL>', request.url)
+  )
+}
+
+function forwardToFs (call, response) {
+  const api = call.api
+  return fsAsync[api].apply(fs, call.args)
+    .then(result => {
+      if (Array.isArray(result)) {
+        return result.map(wrap.bind(null, api))
+      }
+      return wrap(api, result)
+    })
+    .then(result => JSON.stringify({ result }))
+    .catch(err => JSON.stringify({ err: err.message }))
+    .then(answer => send(response, answer))
+}
+
+handlers.POST = async ({ allApis, mapping, match, redirect, request, response }) => {
+  const call = JSON.parse(await readBody(request))
+  if (!allApis.includes(call.api)) {
+    return 404
+  }
+  call.args[0] = path.join(redirect, call.args[0])
+  if (!call.args[0].startsWith(redirect)) { // Use of .. to climb up the hierarchy
+    return 403
+  }
+  return forwardToFs(call, response)
+}
+
 module.exports = {
   async redirect ({ mapping, match, redirect, request, response }) {
-    const method = request.method
     let allApis = readApis
     if (!mapping['read-only']) {
       allApis = allApis.concat(writeApis)
     }
 
-    if (method === 'GET') {
-      const clientString = clientTemplate
-        .replace('<APIS>', allApis.join(','))
-        .replace('<NAME>', mapping['client-name'] || 'fs')
-        .replace('<URL>', request.url)
-      send(response, clientString)
-      return
-    }
-
-    if (method === 'POST') {
-      const body = await readBody(request)
-      const call = JSON.parse(body)
-      const api = call.api
-      if (!allApis.includes(api)) {
-        return 404
-      }
-      call.args[0] = path.join(redirect, call.args[0])
-      if (!call.args[0].startsWith(redirect)) { // Use of .. to climb up the hierarchy
-        return 403
-      }
-      return fsAsync[api].apply(fs, call.args)
-        .then(result => {
-          if (Array.isArray(result)) {
-            return result.map(wrap.bind(null, api))
-          }
-          return wrap(api, result)
-        })
-        .then(result => JSON.stringify({ result }))
-        .catch(err => JSON.stringify({ err: err.message }))
-        .then(answer => send(response, answer))
+    const handler = handlers[request.method]
+    if (handler) {
+      return handler({ allApis, mapping, match, redirect, request, response })
     }
 
     return 500
