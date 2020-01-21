@@ -1,10 +1,10 @@
 {
   "name": "reserve-fs",
   "version": "1.0.0",
-  "description": "fs handler for reserve",
-  "main": "index.js",
+  "description": "fs handler for REserve",
+  "main": "./index.js",
   "files": [
-    "index.js"
+    "*.js"
   ],
   "engines": {
     "node": ">=10.0.0"
