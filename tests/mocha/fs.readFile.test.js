@@ -38,7 +38,7 @@ function test (member) {
   }
 }
 
-describe('fs.readFile', async () => {
+describe('fs.readFile', () => {
   before(() => require('./setup'))
 
   describe('read-only', test('fs'))
