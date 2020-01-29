@@ -46,7 +46,7 @@ function test (member) {
   }
 }
 
-describe('fs.readdir', async () => {
+describe('fs.readdir', () => {
   before(() => require('./setup'))
 
   describe('read-only', test('fs'))
