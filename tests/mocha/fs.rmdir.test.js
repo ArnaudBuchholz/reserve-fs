@@ -2,7 +2,7 @@
 
 const assert = require('./assert')
 
-describe('fs.rmdir', async () => {
+describe('fs.rmdir', () => {
   before(() => require('./setup'))
   after(() => window.fsw.rmdirAsync('tmp'))
 
