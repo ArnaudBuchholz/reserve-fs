@@ -2,7 +2,7 @@
 
 const assert = require('./assert')
 
-describe('fs.unlink', async () => {
+describe('fs.unlink', () => {
   before(() => require('./setup'))
   after(() => window.fsw.rmdirAsync('tmp'))
 
