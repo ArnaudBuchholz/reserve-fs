@@ -2,7 +2,7 @@
 
 const assert = require('./assert')
 
-describe('client', async () => {
+describe('client', () => {
   before(() => require('./setup'))
 
   it('builds window members', () => {
