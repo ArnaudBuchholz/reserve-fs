@@ -2,7 +2,7 @@
 
 const assert = require('./assert')
 
-describe('fs.writeFile', async () => {
+describe('fs.writeFile', () => {
   before(() => require('./setup'))
   after(() => window.fsw.unlinkAsync('tmp/file.txt')
     .then(() => window.fsw.rmdirAsync('tmp'))
