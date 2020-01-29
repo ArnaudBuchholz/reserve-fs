@@ -2,7 +2,7 @@
 
 const assert = require('./assert')
 
-describe('hacking', async () => {
+describe('hacking', () => {
   let mocked
 
   before(async () => {
