@@ -31,6 +31,7 @@ function send (response, answer) {
     'Content-Length': answer.length
   })
   response.end(answer)
+  return response.waitForFinish()
 }
 
 const wrappers = {}
@@ -76,13 +77,12 @@ function wrap (api, result) {
 }
 
 const handlers = {}
-handlers.GET = async ({ allApis, mapping, request, response }) => {
+handlers.GET = ({ allApis, mapping, request, response }) =>
   send(response, clientTemplate
     .replace('<APIS>', allApis.join(','))
     .replace('<NAME>', mapping['client-name'] || 'fs')
     .replace('<URL>', request.url)
   )
-}
 
 function forwardToFs (call, response) {
   const api = call.api
