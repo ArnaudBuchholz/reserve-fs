@@ -15,7 +15,6 @@ It makes Node.js' [fs](https://nodejs.org/api/fs.html) APIs available in the bro
 [![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FArnaudBuchholz%2Freserve-fs.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FArnaudBuchholz%2Freserve-fs?ref=badge_shield)
 
-
 ## Usage
 
 * In the mapping :
