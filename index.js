@@ -6,6 +6,7 @@ const util = require('util')
 
 const readApis = 'readdir,readFile,stat'.split(',')
 const writeApis = 'mkdir,rmdir,unlink,writeFile'.split(',')
+const $apis = Symbol('REserve/fs@apis')
 
 const fsAsync = {}
 readApis.concat(writeApis).forEach(api => {
@@ -76,10 +77,10 @@ function wrap (api, result) {
 }
 
 const handlers = {}
-handlers.GET = async ({ allApis, mapping, request, response }) => {
+handlers.GET = async ({ mapping, request, response }) => {
   send(response, clientTemplate
-    .replace('<APIS>', allApis.join(','))
-    .replace('<NAME>', mapping['client-name'] || 'fs')
+    .replace('<APIS>', mapping[$apis].join(','))
+    .replace('<NAME>', mapping['client-name'])
     .replace('<URL>', request.url)
   )
 }
@@ -98,9 +99,9 @@ function forwardToFs (call, response) {
     .then(answer => send(response, answer))
 }
 
-handlers.POST = async ({ allApis, mapping, match, redirect, request, response }) => {
+handlers.POST = async ({ mapping, match, redirect, request, response }) => {
   const call = JSON.parse(await readBody(request))
-  if (!allApis.includes(call.api)) {
+  if (!mapping[$apis].includes(call.api)) {
     return 404
   }
   call.args[0] = path.join(redirect, call.args[0])
@@ -111,17 +112,30 @@ handlers.POST = async ({ allApis, mapping, match, redirect, request, response })
 }
 
 module.exports = {
-  async redirect ({ mapping, match, redirect, request, response }) {
-    let allApis = readApis
-    if (!mapping['read-only']) {
-      allApis = allApis.concat(writeApis)
+  schema: {
+    'client-name': {
+      type: 'string',
+      defaultValue: 'fs'
+    },
+    'read-only': {
+      type: 'boolean',
+      defaultValue: false
     }
+  },
 
+  async validate (mapping) {
+    if (!mapping['read-only']) {
+      mapping[$apis] = readApis.concat(writeApis)
+    } else {
+      mapping[$apis] = readApis
+    }
+  },
+
+  async redirect ({ mapping, match, redirect, request, response }) {
     const handler = handlers[request.method]
     if (handler) {
-      return handler({ allApis, mapping, match, redirect, request, response })
+      return handler({ mapping, match, redirect, request, response })
     }
-
     return 500
   }
 }
