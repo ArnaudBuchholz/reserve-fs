@@ -85,7 +85,7 @@ handlers.GET = async ({ mapping, request, response }) => {
   )
 }
 
-function forwardToFs (call, response) {
+function forwardToFs (call) {
   const api = call.api
   return fsAsync[api].apply(fs, call.args)
     .then(result => {
@@ -96,19 +96,22 @@ function forwardToFs (call, response) {
     })
     .then(result => JSON.stringify({ result }))
     .catch(err => JSON.stringify({ err: err.message }))
-    .then(answer => send(response, answer))
 }
 
 handlers.POST = async ({ mapping, match, redirect, request, response }) => {
-  const call = JSON.parse(await readBody(request))
-  if (!mapping[$apis].includes(call.api)) {
-    return 404
+  const calls = JSON.parse(await readBody(request))
+  const answers = []
+  for await (call of calls) {
+    if (!mapping[$apis].includes(call.api)) {
+      return 404
+    }
+    call.args[0] = path.join(redirect, call.args[0])
+    if (!call.args[0].startsWith(redirect)) { // Use of .. to climb up the hierarchy
+      return 403
+    }
+    answers.push(await forwardToFs(call))
   }
-  call.args[0] = path.join(redirect, call.args[0])
-  if (!call.args[0].startsWith(redirect)) { // Use of .. to climb up the hierarchy
-    return 403
-  }
-  return forwardToFs(call, response)
+  return send(response, `[${answers.join(',')}]`)
 }
 
 module.exports = {
