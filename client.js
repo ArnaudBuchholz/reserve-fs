@@ -64,30 +64,48 @@ module.exports = function () {
     }
   }
 
+  var pending = []
+
+  function batch () {
+    var xhr = new XMLHttpRequest()
+    var processing = pending
+    pending = []
+    xhr.open('POST', URL)
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          var response = parseResponse(xhr.responseText)
+          if (response.err) {
+            callback(new Error(response.err))
+          } else {
+            callback(null, response.result)
+          }
+        } else {
+          callback(new Error(xhr.statusText))
+        }
+      }
+    }
+    xhr.send(JSON.stringify(pending.map(function (call) {
+      return {
+        api: call.api,
+        args: capp.parameters
+      }
+    })))
+  }
+
   function api (name) {
     return function () {
       var parameters = [].slice.call(arguments)
       var callback = parameters.pop()
-      var xhr = new XMLHttpRequest()
-      xhr.open('POST', URL)
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            var response = parseResponse(xhr.responseText)
-            if (response.err) {
-              callback(new Error(response.err))
-            } else {
-              callback(null, response.result)
-            }
-          } else {
-            callback(new Error(xhr.statusText))
-          }
-        }
-      }
-      xhr.send(JSON.stringify({
+
+      pending.push({
         api: name,
-        args: parameters
-      }))
+        args: parameters,
+        callback: parameters.pop()
+      })
+      if (pending.length === 1) {
+        setTimeout(batch, 0)
+      }
     }
   }
 
