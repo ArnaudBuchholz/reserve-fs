@@ -22,6 +22,7 @@ class XMLHttpRequest {
   }
 
   send (body) {
+    ++XMLHttpRequest.count
     request(this._method, this._url, {}, body)
       .then(response => {
         this.readyState = 2
@@ -45,6 +46,8 @@ class XMLHttpRequest {
 
   onreadystatechange () {}
 }
+
+XMLHttpRequest.count = 0
 
 const Func = Function
 
