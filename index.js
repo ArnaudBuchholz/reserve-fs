@@ -102,11 +102,11 @@ handlers.POST = async ({ mapping, match, redirect, request, response }) => {
   const calls = JSON.parse(await readBody(request))
   return Promise.all(calls.map(call => {
     if (!mapping[$apis].includes(call.api)) {
-      return Promise.resolve({ err: 'Not found' })
+      return Promise.resolve('{"err":"Not found"}')
     }
     call.args[0] = path.join(redirect, call.args[0])
     if (!call.args[0].startsWith(redirect)) { // Use of .. to climb up the hierarchy
-      return Promise.resolve({ err: 'Forbidden' })
+      return Promise.resolve('{"err":"Forbidden"}')
     }
     return forwardToFs(call)
   }))
