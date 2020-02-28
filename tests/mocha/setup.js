@@ -31,7 +31,7 @@ class XMLHttpRequest {
         this.onreadystatechange()
         this.readyState = 4
         this.status = response.statusCode
-        if (JSON.parse(body).args[0] === 'json-parsing-fail') {
+        if (JSON.parse(body)[0].args[0] === 'json-parsing-fail') {
           this.responseText = '!' // Will fail JSON parsing
         } else {
           this.responseText = response.toString()
