@@ -9,12 +9,14 @@ describe('hacking', () => {
     mocked = await require('./setup')
   })
 
-  it('prevents unauthorized api use (mkdir on read-only)', () => mocked.request('POST', '/fs-ro', {}, JSON.stringify({
+  it('prevents unauthorized api use (mkdir on read-only)', () => mocked.request('POST', '/fs-ro', {}, JSON.stringify([{
     api: 'mkdir',
-    args: 'test'
-  }))
+    args: ['test']
+  }]))
     .then(response => {
-      assert(() => response.statusCode === 404)
+      assert(() => response.statusCode === 200)
+      const responses = JSON.parse(response.toString())
+      assert(() => responses[0].err)
     })
   )
 
