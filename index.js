@@ -100,18 +100,17 @@ function forwardToFs (call) {
 
 handlers.POST = async ({ mapping, match, redirect, request, response }) => {
   const calls = JSON.parse(await readBody(request))
-  const answers = []
-  for await (call of calls) {
+  return Promise.all(calls.map(call => {
     if (!mapping[$apis].includes(call.api)) {
-      return 404
+      return Promise.resolve({ err: 'Not found' })
     }
     call.args[0] = path.join(redirect, call.args[0])
     if (!call.args[0].startsWith(redirect)) { // Use of .. to climb up the hierarchy
-      return 403
+      return Promise.resolve({ err: 'Forbidden' })
     }
-    answers.push(await forwardToFs(call))
-  }
-  return send(response, `[${answers.join(',')}]`)
+    return forwardToFs(call)
+  }))
+    .then(answers => send(response, `[${answers.join(',')}]`))
 }
 
 module.exports = {
