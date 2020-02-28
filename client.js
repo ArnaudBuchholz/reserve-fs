@@ -45,23 +45,19 @@ module.exports = function () {
     return result
   }
 
-  function parseResponse (responseText) {
-    try {
-      var response = JSON.parse(responseText)
-      if (response.err) {
+  function parseResponses (responseText) {
+    return JSON.parse(responseText)
+      .map(function (response) {
+        if (response.err) {
+          return response
+        }
+        if (Array.isArray(response.result)) {
+          response.result = response.result.map(unwrap)
+        } else {
+          response.result = unwrap(response.result)
+        }
         return response
-      }
-      if (Array.isArray(response.result)) {
-        response.result = response.result.map(unwrap)
-      } else {
-        response.result = unwrap(response.result)
-      }
-      return response
-    } catch (e) {
-      return {
-        err: e
-      }
-    }
+      })
   }
 
   var pending = []
@@ -73,35 +69,40 @@ module.exports = function () {
     xhr.open('POST', URL)
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
+        var error
         if (xhr.status === 200) {
-          var response = parseResponse(xhr.responseText)
-          if (response.err) {
-            callback(new Error(response.err))
-          } else {
-            callback(null, response.result)
+          try {
+            parseResponses(xhr.responseText)
+              .forEach(function (response, index) {
+                var callback = processing[index].callback
+                if (response.err) {
+                  callback(new Error(response.err))
+                } else {
+                  callback(null, response.result)
+                }
+              })
+          } catch (e) {
+            error = e
           }
         } else {
-          callback(new Error(xhr.statusText))
+          error = new Error(xhr.statusText)
         }
+        processing.forEach(function (item) {
+          item.callback(error)
+        })
       }
     }
-    xhr.send(JSON.stringify(pending.map(function (call) {
-      return {
-        api: call.api,
-        args: capp.parameters
-      }
-    })))
+    xhr.send(JSON.stringify(processing))
   }
 
   function api (name) {
     return function () {
       var parameters = [].slice.call(arguments)
       var callback = parameters.pop()
-
       pending.push({
         api: name,
         args: parameters,
-        callback: parameters.pop()
+        callback: callback
       })
       if (pending.length === 1) {
         setTimeout(batch, 0)
