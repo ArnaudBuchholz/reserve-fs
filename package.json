@@ -1,6 +1,6 @@
 {
   "name": "reserve-fs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "fs handler for REserve",
   "main": "./index.js",
   "files": [
@@ -50,6 +50,7 @@
       "describe",
       "it",
       "before",
+      "beforeEach",
       "after"
     ]
   },
