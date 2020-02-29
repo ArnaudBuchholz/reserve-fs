@@ -20,7 +20,13 @@ describe('hacking', () => {
     })
   )
 
-  it('handles unexpected errors', () => window.fs.readdirAsync('json-parsing-fail')
+  it('handles unexpected errors (invalid json)', () => window.fs.readdirAsync('json-parsing-fail')
+    .then(assert.notExpected, reason => {
+      assert(() => reason instanceof Error)
+    })
+  )
+
+  it('handles unexpected errors (invalid status)', () => window.fs.readdirAsync('status-error')
     .then(assert.notExpected, reason => {
       assert(() => reason instanceof Error)
     })
