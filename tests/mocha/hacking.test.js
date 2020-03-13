@@ -38,7 +38,7 @@ describe('hacking', () => {
       args: '.'
     }))
       .then(response => {
-        assert(() => response.statusCode === 500)
+        assert(() => response.statusCode === 501)
       })
     )
   })
