@@ -3,6 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 const util = require('util')
+const { body } = require('reserve')
 
 const readApis = 'readdir,readFile,stat'.split(',')
 const writeApis = 'mkdir,rmdir,unlink,writeFile'.split(',')
@@ -15,16 +16,6 @@ readApis.concat(writeApis).forEach(api => {
 
 const client = require('./client')
 const clientTemplate = `(${client.toString()}())`
-
-function readBody (request) {
-  return new Promise((resolve, reject) => {
-    const buffer = []
-    request
-      .on('data', chunk => buffer.push(chunk.toString()))
-      .on('error', reject)
-      .on('end', () => resolve(buffer.join('')))
-  })
-}
 
 function send (response, answer) {
   response.writeHead(200, {
@@ -99,7 +90,7 @@ function forwardToFs (call) {
 }
 
 handlers.POST = async ({ mapping, match, redirect, request, response }) => {
-  const calls = JSON.parse(await readBody(request))
+  const calls = JSON.parse(await body(request))
   return Promise.all(calls.map(call => {
     if (!mapping[$apis].includes(call.api)) {
       return Promise.resolve('{"err":"Not found"}')
@@ -124,7 +115,6 @@ module.exports = {
       defaultValue: false
     }
   },
-
   async validate (mapping) {
     if (!mapping['read-only']) {
       mapping[$apis] = readApis.concat(writeApis)
@@ -132,12 +122,8 @@ module.exports = {
       mapping[$apis] = readApis
     }
   },
-
+  method: Object.keys(handlers),
   async redirect ({ mapping, match, redirect, request, response }) {
-    const handler = handlers[request.method]
-    if (handler) {
-      return handler({ mapping, match, redirect, request, response })
-    }
-    return 500
+    return handlers[request.method]({ mapping, match, redirect, request, response })
   }
 }
