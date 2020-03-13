@@ -1,6 +1,6 @@
 {
   "name": "reserve-fs",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "fs handler for REserve",
   "main": "./index.js",
   "files": [
@@ -31,6 +31,9 @@
     "url": "https://github.com/ArnaudBuchholz/reserve-fs/issues"
   },
   "homepage": "https://github.com/ArnaudBuchholz/reserve-fs#readme",
+  "dependencies": {
+    "reserve": "^1.4.0"
+  },
   "devDependencies": {
     "coveralls": "^3.0.9",
     "eslint-utils": "^2.0.0",
@@ -38,10 +41,8 @@
     "mocha": "^7.0.0",
     "mock-require": "^3.0.3",
     "nyc": "^15.0.0",
-    "reserve": "^1.3.0",
     "standard": "^14.3.1"
   },
-  "dependencies": {},
   "standard": {
     "globals": [
       "XMLHttpRequest",
